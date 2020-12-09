@@ -1,3 +1,5 @@
+This is a fork of EasyMDE which contains underline by default.
+
 # EasyMDE - Markdown Editor
 
 [![npm version](https://img.shields.io/npm/v/easymde.svg?style=for-the-badge)](https://www.npmjs.com/package/easymde)
