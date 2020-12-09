@@ -406,7 +406,7 @@ function toggleStrikethrough(editor) {
 /**
  * Action for toggling underline.
  */
-function toggleStrikethrough(editor) {
+function toggleUnderline(editor) {
     _toggleBlock(editor, 'underline', '_');
 }
 
@@ -1260,8 +1260,8 @@ function _toggleBlock(editor, type, start_chars, end_chars) {
             start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, '');
             end = end.replace(/(\*\*|~~)/, '');
         } else if (type == 'underline') {
-            start = start.replace(/(\_)(?![\s\S]*(\_))/, '');
-            end = end.replace(/(\_)/, '');
+            start = start.replace(/(_)(?![\s\S]*(_))/, '');
+            end = end.replace(/(_)/, '');
         }
         cm.replaceRange(start + end, {
             line: startPoint.line,
