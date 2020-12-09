@@ -23,6 +23,7 @@ var anchorToExternalRegex = new RegExp(/(<a.*?https?:\/\/.*?[^a]>)+?/g);
 var bindings = {
     'toggleBold': toggleBold,
     'toggleItalic': toggleItalic,
+    'toggleUnderline': toggleUnderline,
     'drawLink': drawLink,
     'toggleHeadingSmaller': toggleHeadingSmaller,
     'toggleHeadingBigger': toggleHeadingBigger,
@@ -48,6 +49,7 @@ var bindings = {
 var shortcuts = {
     'toggleBold': 'Cmd-B',
     'toggleItalic': 'Cmd-I',
+    'toggleUnderline': 'Cmd-U',
     'drawLink': 'Cmd-K',
     'toggleHeadingSmaller': 'Cmd-H',
     'toggleHeadingBigger': 'Shift-Cmd-H',
@@ -298,6 +300,8 @@ function getState(cm, pos) {
             ret.quote = true;
         } else if (data === 'strikethrough') {
             ret.strikethrough = true;
+        } else if (data === 'underline') {
+            ret.underline = true;
         } else if (data === 'comment') {
             ret.code = true;
         } else if (data === 'link') {
@@ -387,7 +391,7 @@ function toggleBold(editor) {
  * Action for toggling italic.
  */
 function toggleItalic(editor) {
-    _toggleBlock(editor, 'italic', editor.options.blockStyles.italic);
+    _toggleBlock(editor, 'italic', '*');
 }
 
 
@@ -396,6 +400,14 @@ function toggleItalic(editor) {
  */
 function toggleStrikethrough(editor) {
     _toggleBlock(editor, 'strikethrough', '~~');
+}
+
+
+/**
+ * Action for toggling underline.
+ */
+function toggleStrikethrough(editor) {
+    _toggleBlock(editor, 'underline', '_');
 }
 
 /**
@@ -1242,11 +1254,14 @@ function _toggleBlock(editor, type, start_chars, end_chars) {
             start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, '');
             end = end.replace(/(\*\*|__)/, '');
         } else if (type == 'italic') {
-            start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, '');
-            end = end.replace(/(\*|_)/, '');
+            start = start.replace(/(\*)(?![\s\S]*(\*))/, '');
+            end = end.replace(/(\*)/, '');
         } else if (type == 'strikethrough') {
             start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, '');
             end = end.replace(/(\*\*|~~)/, '');
+        } else if (type == 'underline') {
+            start = start.replace(/(\_)(?![\s\S]*(\_))/, '');
+            end = end.replace(/(\_)/, '');
         }
         cm.replaceRange(start + end, {
             line: startPoint.line,
@@ -1261,7 +1276,7 @@ function _toggleBlock(editor, type, start_chars, end_chars) {
             if (startPoint !== endPoint) {
                 endPoint.ch -= 2;
             }
-        } else if (type == 'italic') {
+        } else if (type == 'italic' || type == 'underline') {
             startPoint.ch -= 1;
             if (startPoint !== endPoint) {
                 endPoint.ch -= 1;
@@ -1274,9 +1289,10 @@ function _toggleBlock(editor, type, start_chars, end_chars) {
             text = text.split('__').join('');
         } else if (type == 'italic') {
             text = text.split('*').join('');
-            text = text.split('_').join('');
         } else if (type == 'strikethrough') {
             text = text.split('~~').join('');
+        } else if (type == 'underline') {
+            text = text.split('_').join('');
         }
         cm.replaceSelection(start + text + end);
 
@@ -1396,6 +1412,12 @@ var toolbarBuiltInButtons = {
         action: toggleStrikethrough,
         className: 'fa fa-strikethrough',
         title: 'Strikethrough',
+    },
+    'underline': {
+        name: 'underline',
+        action: toggleUnderline,
+        className: 'fa fa-underline',
+        title: 'underline',
     },
     'heading': {
         name: 'heading',
@@ -2739,6 +2761,7 @@ EasyMDE.prototype.value = function (val) {
 EasyMDE.toggleBold = toggleBold;
 EasyMDE.toggleItalic = toggleItalic;
 EasyMDE.toggleStrikethrough = toggleStrikethrough;
+EasyMDE.toggleUnderline = toggleUnderline;
 EasyMDE.toggleBlockquote = toggleBlockquote;
 EasyMDE.toggleHeadingSmaller = toggleHeadingSmaller;
 EasyMDE.toggleHeadingBigger = toggleHeadingBigger;
@@ -2771,6 +2794,9 @@ EasyMDE.prototype.toggleItalic = function () {
 };
 EasyMDE.prototype.toggleStrikethrough = function () {
     toggleStrikethrough(this);
+};
+EasyMDE.prototype.toggleUnderline = function () {
+    toggleUnderline(this);
 };
 EasyMDE.prototype.toggleBlockquote = function () {
     toggleBlockquote(this);
